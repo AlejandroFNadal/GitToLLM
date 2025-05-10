@@ -13,7 +13,7 @@ def run_question(question: str):
     query_embedding = model.encode(question).tolist()
     results = collection.query(
         query_embeddings=[query_embedding],
-        n_results=5
+        n_results=10
     )
 
     if results['documents'] == []:
