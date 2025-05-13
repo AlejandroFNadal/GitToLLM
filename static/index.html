@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Codebase Assistant</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2em;
+        background: #f4f4f4;
+      }
+      input,
+      select,
+      button,
+      textarea {
+        font-size: 1em;
+        margin: 0.5em 0;
+        padding: 0.5em;
+        width: 100%;
+      }
+      #config {
+        background: #fff;
+        padding: 1em;
+        border-radius: 6px;
+      }
+      #chat {
+        margin-top: 2em;
+      }
+      pre {
+        background: #222;
+        color: #0f0;
+        padding: 1em;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Codebase Assistant</h2>
+
+    <div id="config">
+      <h3>Configuration</h3>
+      <label
+        >Model:
+        <input id="model" value="codellama" />
+      </label>
+      <label
+        >Ollama Port:
+        <input id="ollama_port" value="11434" />
+      </label>
+      <label
+        >ChromaDB Port:
+        <input id="chroma_port" value="8000" />
+      </label>
+      <label
+        >Web Port:
+        <input id="web_port" value="7860" />
+      </label>
+      <button onclick="applyConfig()">Apply Config</button>
+    </div>
+
+    <div id="chat">
+      <h3>Ask a Question</h3>
+      <textarea id="q" rows="4"></textarea>
+      <button onclick="ask()">Send</button>
+      <pre id="a"></pre>
+    </div>
+
+    <div id="add-repo">
+      <h3>Add a Repository</h3>
+      <label
+        >Repository Path:
+        <input type="text" id="repoPath" placeholder="/absolute/path/to/repo" />
+      </label>
+      <button onclick="addRepo()">Add Repository</button>
+      <pre id="repoStatus"></pre>
+    </div>
+
+    <script>
+      async function ask() {
+        const q = document.getElementById("q").value;
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: q }),
+        });
+        const data = await res.json();
+        document.getElementById("a").innerText = data.response;
+      }
+
+      function applyConfig() {
+        const model = document.getElementById("model").value;
+        const ollama = document.getElementById("ollama_port").value;
+        const chroma = document.getElementById("chroma_port").value;
+        const web = document.getElementById("web_port").value;
+        alert(
+          "Note: Config changes must be edited in the backend script for now.\n\n\nFuture versions can send this to the backend dynamically.",
+        );
+      }
+      async function addRepo() {
+        const repoPath = document.getElementById("repoPath").value;
+        if (!repoPath) {
+          alert("Please enter a valid repository path.");
+          return;
+        }
+
+        const res = await fetch("/add-repo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: repoPath }),
+        });
+
+        const data = await res.json();
+        document.getElementById("repoStatus").innerText = data.status;
+      }
+    </script>
+  </body>
+</html>
